@@ -3,11 +3,52 @@
 {% block title %}Inicio - Tienda Virtual{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <h1>Bienvenido a la Tienda Virtual</h1>
-        <!-- TODO: Mostrar productos destacados -->
-        <!-- TODO: Agregar carousel o grid de productos -->
+<div class="row mb-4">
+    <div class="col-12 text-center py-5 bg-light rounded">
+        <h1 class="display-5 fw-bold">Bienvenido a la Tienda Virtual</h1>
+        <p class="lead text-muted">Los mejores productos tecnológicos al mejor precio.</p>
+        <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">Ver catálogo</a>
     </div>
+</div>
+<!-- TODO: Mostrar productos destacados -->
+<!-- TODO: Agregar carousel o grid de productos -->
+<h2 class="mb-3">Productos Destacados</h2>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+    {% for producto in productos %}
+    <div class="col">
+        <div class="card h-100 product-card shadow-sm">
+            {% if producto.image_url %}
+                <img src="{{ producto.image_url }}" class="card-img-top product-img" alt="{{ producto.name }}"
+                     onerror="this.src='https://via.placeholder.com/300x200?text=Sin+imagen'">
+            {% else %}
+                <div class="product-img bg-secondary d-flex align-items-center justify-content-center">
+                    <span class="text-white">Sin imagen</span>
+                </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">{{ producto.name }}</h5>
+                <p class="card-text text-muted small flex-grow-1">{{ producto.description or '' }}</p>
+                <div class="mt-2">
+                    <span class="fs-5 fw-bold text-primary">${{ "%.2f"|format(producto.price) }}</span>
+                    <span class="text-muted small ms-2">Stock: {{ producto.stock }}</span>
+                </div>
+                {% if logged_in %}
+                <form action="{{ url_for('add_to_cart', product_id=producto.id) }}" method="post" class="mt-2">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Agregar al carrito</button>
+                </form>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-sm w-100 mt-2">
+                    Inicia sesión para comprar
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <p class="text-muted">No hay productos disponibles en este momento.</p>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

@@ -74,7 +74,7 @@ async def get_user_profile(user_id: int, db: Session = Depends(get_db)):
 @router.put("/profile/{user_id}", response_model=UserOut)
 async def update_user_profile(user_id: int, data: UserUpdate, db: Session = Depends(get_db)):
     # TODO: Implementar actualizar perfil de usuario
-    suario = db.query(User).filter(User.id == user_id).first()
+    usuario = db.query(User).filter(User.id == user_id).first()
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 

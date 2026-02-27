@@ -47,13 +47,14 @@ CREATE TABLE IF NOT EXISTS cart_items (
 
 CREATE INDEX IF NOT EXISTS idx_products_name ON products(name);
 CREATE INDEX IF NOT EXISTS idx_carts_user_id ON carts(user_id);
+CREATE INDEX IF NOT EXISTS idx_cart_items_cart ON cart_items(cart_id);
 
 -- TODO: Insertar datos de prueba
 -- Usuarios
 INSERT INTO users (username, email, password_hash) VALUES
   ('juan_perez',  'juan@example.com',  '$2b$12$abc123hashejemplo1'),
   ('maria_lopez', 'maria@example.com', '$2b$12$abc123hashejemplo2'),
-  ('carlos_dev',  'carlos@example.com','$2b$12$abc123hashejemplo3');
+  ('carlos_dev',  'carlos@example.com','$2b$12$abc123hashejemplo3') ON CONFLICT DO NOTHING;
 
 -- Productos
 INSERT INTO products (name, description, price, stock, image_url) VALUES
@@ -61,20 +62,19 @@ INSERT INTO products (name, description, price, stock, image_url) VALUES
   ('Mouse Inalámbrico','Mouse ergonómico con batería recargable',           29.99, 50, 'https://example.com/mouse.jpg'),
   ('Teclado Mecánico', 'Teclado con switches azules retroiluminado',        89.99, 25, 'https://example.com/teclado.jpg'),
   ('Monitor 27"',      'Monitor 4K con panel IPS',                        399.99,  8, 'https://example.com/monitor.jpg'),
-  ('Auriculares BT',   'Auriculares bluetooth con cancelación de ruido',  149.99, 15, NULL);
+  ('Auriculares BT',   'Auriculares bluetooth con cancelación de ruido',  149.99, 15, NULL) ON CONFLICT DO NOTHING;
 
 -- Carritos (uno por usuario)
-INSERT INTO carts (user_id) VALUES
-  (1),
-  (2),
-  (3);
+INSERT INTO carts (user_id)
+SELECT id FROM users
+ON CONFLICT DO NOTHING;
 
 -- Items del carrito
 INSERT INTO cart_items (cart_id, product_id, quantity) VALUES
-  ((SELECT id FROM carts WHERE user_id = 1), 1, 1),  -- juan tiene una Laptop
-  ((SELECT id FROM carts WHERE user_id = 1), 2, 2),  -- juan tiene 2 mouses
-  ((SELECT id FROM carts WHERE user_id = 1), 3, 1),  -- juan tiene un teclado
-  ((SELECT id FROM carts WHERE user_id = 2), 4, 1),  -- maria tiene un monitor
-  ((SELECT id FROM carts WHERE user_id = 2), 5, 1),  -- maria tiene auriculares
-  ((SELECT id FROM carts WHERE user_id = 3), 5, 1),  -- carlos tiene auriculares
-  ((SELECT id FROM carts WHERE user_id = 3), 2, 1);  -- carlos tiene un mouse
+  ((SELECT id FROM carts WHERE user_id = (SELECT id FROM users WHERE username = 'juan_perez')),  1, 1),
+  ((SELECT id FROM carts WHERE user_id = (SELECT id FROM users WHERE username = 'juan_perez')),  2, 2),
+  ((SELECT id FROM carts WHERE user_id = (SELECT id FROM users WHERE username = 'juan_perez')),  3, 1),
+  ((SELECT id FROM carts WHERE user_id = (SELECT id FROM users WHERE username = 'maria_lopez')), 4, 1),
+  ((SELECT id FROM carts WHERE user_id = (SELECT id FROM users WHERE username = 'maria_lopez')), 5, 1),
+  ((SELECT id FROM carts WHERE user_id = (SELECT id FROM users WHERE username = 'carlos_dev')),  5, 1),
+  ((SELECT id FROM carts WHERE user_id = (SELECT id FROM users WHERE username = 'carlos_dev')),  2, 1) ON CONFLICT DO NOTHING;

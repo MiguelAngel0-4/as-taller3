@@ -1,14 +1,51 @@
 /* TODO: Agregar estilos personalizados */
 body {
     font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
 }
 
 .product-card {
     /* TODO: Estilos para las tarjetas de productos */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0.5rem;
+    overflow: hidden;
 }
 
-.cart-item {
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+.product-img {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.cart-item td {
     /* TODO: Estilos para items del carrito */
+    vertical-align: middle;
 }
 
 /* TODO: Agregar más estilos según sea necesario */
+/* Navbar */
+.navbar-brand {
+    font-size: 1.3rem;
+    letter-spacing: 0.5px;
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid #dee2e6;
+}
+
+/* Botones */
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Precio destacado */
+.fs-5.fw-bold.text-primary {
+    font-size: 1.15rem !important;
+}

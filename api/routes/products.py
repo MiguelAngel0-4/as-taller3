@@ -58,7 +58,7 @@ async def create_product(data: ProductCreate, db: Session = Depends(get_db)):
     return producto
 
 @router.put("/{product_id}", response_model=ProductOut)
-async def update_product(product_id: int, db: Session = Depends(get_db)):
+async def update_product(product_id: int, data: ProductUpdate, db: Session = Depends(get_db)):
     # TODO: Implementar actualizar producto
     producto = db.query(Product).filter(Product.id == product_id).first()
     if not producto:

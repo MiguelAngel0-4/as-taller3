@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from api.database import get_db
-from api.models.cart import Cart, CartItem
+from database import get_db
+from models.cart import Cart, CartItem
+from models.product import Product
 
 router = APIRouter()
 
@@ -25,8 +26,7 @@ class CartItemOut(BaseModel):
     product_name: Optional[str] = None
     product_price: Optional[float] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class CartOut(BaseModel):
@@ -34,8 +34,7 @@ class CartOut(BaseModel):
     user_id: int
     items: List[CartItemOut] = []
 
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 #Helpers
 def _get_or_create_cart(user_id: int, db: Session) -> Cart:
@@ -63,15 +62,15 @@ def _enrich_items(items: List[CartItem], db: Session) -> List[CartItemOut]:
         ))
     return resultado
 
-@router.get("/{user_id}")
+@router.get("/{user_id}", response_model=CartOut)
 async def get_user_cart(user_id: int, db: Session = Depends(get_db)):
     # TODO: Implementar obtener carrito del usuario
     carrito = _get_or_create_cart(user_id, db)
     items = db.query(CartItem).filter(CartItem.cart_id == carrito.id).all()
-    return {"id": carrito.id, "user_id": carrito.user_id, "items": _enrich_items(items, db)}
+    return CartOut(id=carrito.id, user_id=carrito.user_id, items=_enrich_items(items, db))
 
 @router.post("/items", status_code=status.HTTP_201_CREATED)
-async def add_item_to_cart(data: CartItem, db: Session = Depends(get_db)):
+async def add_item_to_cart(data: CartItemAdd, db: Session = Depends(get_db)):
     # TODO: Implementar agregar item al carrito
     producto = db.query(Product).filter(Product.id == data.product_id).first()
     if not producto:

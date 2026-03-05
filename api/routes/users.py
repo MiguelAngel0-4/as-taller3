@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
-from api.database import get_db
-from api.models.user import User
+from database import get_db
+from models.user import User
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

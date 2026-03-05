@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from api.database import Base
+from database import Base
 
 class Cart(Base):
     __tablename__ = "carts"
@@ -18,7 +18,7 @@ class Cart(Base):
     # TODO: Definir relaciones
     # user = relationship(...)
     # items = relationship(...)
-    user  = relationship("User",     back_populates=None)
+    user  = relationship("User")
     items = relationship("CartItem", back_populates="cart", cascade="all, delete-orphan")
 
     def __repr__(self):
